@@ -22,7 +22,13 @@ public class EsReader {
 		return instance;
 	}
 
-	public String getEsReq(String urls, String data) {
+	/**
+	 * POST 형식으로 Elasticsearch 명령 및 결과 전달.
+	 * @param urls
+	 * @param data
+	 * @return
+	 */
+	public String getEsPost(String urls, String data) {
 		StringBuffer res = new StringBuffer();
 		try {
 
@@ -52,4 +58,28 @@ public class EsReader {
 		return res.toString();
 	}
 
+	/**
+	 * GET 형식으로 Elasticsearch 명령 및 결과 전달.
+	 * @param urls
+	 * @return
+	 */
+	public String getEsGet(String urls) {
+		StringBuffer res = new StringBuffer();
+		try {
+			URL url = new URL(urls);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			String output;
+			while ((output = br.readLine()) != null) {
+				res.append(output + "\n");
+			}
+			conn.disconnect();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return res.toString();
+	}
 }
