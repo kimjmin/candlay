@@ -12,25 +12,45 @@ public class Receiver extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public void doPut(HttpServletRequest req, HttpServletResponse res)
+	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws IOException {
 		res.setContentType("text/html; charset=UTF-8");
-
+		
+		String url = "";
+		StringBuffer data = new StringBuffer();
 		BufferedReader bufferR;
 		bufferR = req.getReader();
 		
-		String type = req.getContentType();
-		String path = req.getContextPath();
-		String pathInfo = req.getPathInfo();	// / 이하 패스 정보.
+		EsReader esr = EsReader.getInstance();
 		
-		StringBuffer sbf = new StringBuffer();
+		StringBuffer requestURL = req.getRequestURL();
+	    String queryString = req.getQueryString();
+		if (queryString == null) {
+			url = requestURL.toString();
+	    } else {
+	    	url = requestURL.append('?').append(queryString).toString();
+	    }
+		url = url.replaceAll("candoitsoft.kr:9600","localhost:9200");
+		
 		String message = "";
 		while((message = bufferR.readLine()) != null){
-			System.out.println(message);
-			sbf.append(message + "\n");
+			data.append(message + "\n");
 		}
 		
 		PrintWriter out = res.getWriter();
-		out.print("pathInfo: "+ pathInfo+"\ntype : " + type + "\npath : " + path + "\n" + sbf.toString());
+		out.print(esr.getEsReq(url, data.toString()));
+	}
+	
+	public void doPost(HttpServletRequest req, HttpServletResponse res)
+			throws IOException {
+		this.doGet(req, res);
+	}
+	
+	public void doPut(HttpServletRequest req, HttpServletResponse res)
+			throws IOException {
+	}
+	
+	public void doDelete(HttpServletRequest req, HttpServletResponse res)
+			throws IOException {
 	}
 }
