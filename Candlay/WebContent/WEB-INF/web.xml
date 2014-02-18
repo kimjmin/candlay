@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+	<display-name>Candi</display-name>
+
+	<servlet>
+		<servlet-name>Receiver</servlet-name>
+		<servlet-class>candoit.pipe.Receiver</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Receiver</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+
+</web-app>
