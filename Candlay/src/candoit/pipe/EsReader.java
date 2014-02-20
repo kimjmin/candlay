@@ -21,19 +21,22 @@ public class EsReader {
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * POST 형식으로 Elasticsearch 명령 및 결과 전달.
+	 * 
 	 * @param urls
 	 * @param data
 	 * @return
 	 */
 	public String getEsPost(String urls, String data) {
 		StringBuffer res = new StringBuffer();
+		URL url = null;
+		HttpURLConnection conn = null;
 		try {
 
-			URL url = new URL(urls);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			url = new URL(urls);
+			conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
@@ -42,6 +45,48 @@ public class EsReader {
 			os.write(data.getBytes());
 			os.flush();
 
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					conn.getInputStream()));
+			String output;
+			while ((output = br.readLine()) != null) {
+				res.append(output);
+			}
+			conn.disconnect();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+			// 오류의 경우 getErrorStream 으로 오류 스트림 전달.
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						conn.getErrorStream()));
+				String errOutput;
+				res = new StringBuffer();
+				while ((errOutput = br.readLine()) != null) {
+					res.append(errOutput);
+				}
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+		// System.out.println(res.toString());
+		return res.toString();
+	}
+
+	/**
+	 * GET 형식으로 Elasticsearch 명령 및 결과 전달.
+	 * 
+	 * @param urls
+	 * @return
+	 */
+	public String getEsGet(String urls, String method) {
+		StringBuffer res = new StringBuffer();
+		URL url = null;
+		HttpURLConnection conn = null;
+		try {
+			url = new URL(urls);
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod(method);
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					(conn.getInputStream())));
 			String output;
@@ -53,32 +98,18 @@ public class EsReader {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-//		System.out.println(res.toString());
-		return res.toString();
-	}
-
-	/**
-	 * GET 형식으로 Elasticsearch 명령 및 결과 전달.
-	 * @param urls
-	 * @return
-	 */
-	public String getEsGet(String urls, String method) {
-		StringBuffer res = new StringBuffer();
-		try {
-			URL url = new URL(urls);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod(method);
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-			String output;
-			while ((output = br.readLine()) != null) {
-				res.append(output);
+			// 오류의 경우 getErrorStream 으로 오류 스트림 전달.
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						conn.getErrorStream()));
+				String errOutput;
+				res = new StringBuffer();
+				while ((errOutput = br.readLine()) != null) {
+					res.append(errOutput);
+				}
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
-			conn.disconnect();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 //		System.out.println(res.toString());
 		return res.toString();
