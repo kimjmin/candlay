@@ -12,6 +12,9 @@ public class Receiver extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * PUT, DELETE, POST 를 제외한 모든 명령어 처리.
+	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws IOException {
 		
@@ -42,6 +45,9 @@ public class Receiver extends HttpServlet {
 		
 	}
 
+	/**
+	 * POST 명령어 처리.
+	 */
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 			throws IOException {
 		
@@ -71,6 +77,9 @@ public class Receiver extends HttpServlet {
 		out.print(esr.getEsPost(url, data.toString()));
 	}
 
+	/**
+	 * HTTP 명령어 처리.
+	 */
 	public void service(HttpServletRequest req, HttpServletResponse res)
 			throws IOException {
 		String url = "";
